@@ -84,6 +84,7 @@ def conectar_servidor():
         resolver = localContext.ServiceManager.createInstanceWithContext(
             "com.sun.star.bridge.UnoUrlResolver", localContext
         )
+        time.sleep(10)
         ctx = resolver.resolve("uno:socket,host=localhost,port=2002;urp;StarOffice.ComponentContext")
 
         # Obtener el ServiceManager
@@ -210,7 +211,8 @@ def mostrar_menu():
 def main():
     # Verificar si el servidor de LibreOffice está en ejecución
     server_started = False
-
+    connection = None  # Inicializar la variable
+    
     if not esta_activo_servidor():
         print("Iniciando el servidor de LibreOffice...")
         iniciar_el_servidor()
@@ -220,6 +222,7 @@ def main():
         if not esta_activo_servidor():
             print("No se pudo iniciar el servidor de LibreOffice. Saliendo del programa.")
             return
+
 
     try:
         # Conectar a la base de datos y obtener el dataSource y smgr
@@ -271,7 +274,7 @@ def main():
     finally:
         # Cerrar la conexión a la base de datos
         try:
-            if 'connection' in locals() and connection.isConnected():
+            if connection is not None:
                 connection.close()
                 print("Conexión a la base de datos cerrada.")
         except Exception as e:
@@ -281,6 +284,7 @@ def main():
         # Cerrar LibreOffice de manera ordenada
         if server_started:
             para_api_uno()
+
 
 if __name__ == "__main__":
     main()
